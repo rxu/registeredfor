@@ -36,4 +36,13 @@ class extension_test extends \phpbb_functional_test_case
 		$this->assertContains('Registered for', $crawler->filter('dd[class="profile-joined"]')->text());
 		$this->assertNotContains('Joined', $crawler->filter('dd[class="profile-joined"]')->text());
 	}
+
+	public function test_post_memberlist_profile_info()
+	{
+		$this->login();
+
+		$crawler = self::request('GET', 'memberlist.php?mode=viewprofile&u=2&sid=' . $this->sid);
+		$this->assertContains('Registered for', $crawler->filter('dl[class="details"]')->eq(1)->text());
+		$this->assertNotContains('Joined', $crawler->filter('dl[class="details"]')->eq(1)->text());
+	}
 }

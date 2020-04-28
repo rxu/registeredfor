@@ -69,7 +69,7 @@ class main_listener implements EventSubscriberInterface
 				break;
 
 				case 'core.viewtopic_modify_post_row':
-					$this->language->add_lang('registeredfor', 'rxu\registeredfor');
+					$this->language->add_lang('registeredfor', 'rxu/registeredfor');
 
 					$post_row = $event['post_row'];
 					$user_poster_data = $event['post_row'];
@@ -111,7 +111,7 @@ class main_listener implements EventSubscriberInterface
 		{
 			if ($eventname == 'core.memberlist_view_profile')
 			{
-				$this->language->add_lang('registeredfor', 'rxu\registeredfor');
+				$this->language->add_lang('registeredfor', 'rxu/registeredfor');
 			}
 			$this->template->assign_var('L_JOINED', $this->language->lang('REGISTEREDFOR'));
 		}

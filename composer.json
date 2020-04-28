@@ -1,7 +1,7 @@
 {
     "name": "rxu/registeredfor",
     "type": "phpbb-extension",
-    "description": "Replaces 'Joined' with 'Registered for' membership timespan in viewtopic/PM miniprofiles and user profile",
+    "description": "Replaces 'Joined' with 'Registered for' membership timespan in viewtopic/PM miniprofiles and user profiles",
     "homepage": "https://www.phpbbguru.net",
     "version": "1.0.0-dev",
     "time": "2020-04-28",

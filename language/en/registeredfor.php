@@ -16,7 +16,7 @@ if (!defined('IN_PHPBB'))
 
 if (empty($lang) || !is_array($lang))
 {
-	$lang = array();
+	$lang = [];
 }
 
 // DEVELOPERS PLEASE NOTE
@@ -35,32 +35,32 @@ if (empty($lang) || !is_array($lang))
 // ’ » “ ” …
 //
 
-$lang = array_merge($lang, array(
+$lang = array_merge($lang, [
 
-	'D_SECONDS'  => array(
+	'D_SECONDS'	=> [
 		1	=> '%d second',
 		2	=> '%d seconds',
-	),
-	'D_MINUTES'  => array(
+	],
+	'D_MINUTES'	=> [
 		1	=> '%d minute',
 		2	=> '%d minutes',
-	),
-	'D_HOURS'    => array(
+	],
+	'D_HOURS'	=> [
 		1	=> '%d hour',
 		2	=> '%d hours',
-	),
-	'D_MDAY'     => array(
+	],
+	'D_MDAY'	=> [
 		1	=> '%d day',
 		2	=> '%d days',
-	),
-	'D_MON'      => array(
+	],
+	'D_MON'		=> [
 		1	=> '%d month',
 		2	=> '%d months',
-	),
-	'D_YEAR'     => array(
+	],
+	'D_YEAR'	=> [
 		1	=> '%d year',
 		2	=> '%d years',
-	),
+	],
 
 	'REGISTEREDFOR'	=> 'Registered for',
-));
+]);

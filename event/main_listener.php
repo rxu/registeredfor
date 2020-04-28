@@ -23,14 +23,14 @@ class main_listener implements EventSubscriberInterface
 {
 	public static function getSubscribedEvents()
 	{
-		return array(
+		return [
 			'core.viewtopic_cache_user_data'		=> 'add_registered_for_info_viewtopic',
 			'core.viewtopic_modify_post_row'		=> 'add_registered_for_info_viewtopic',
 			'core.memberlist_prepare_profile_data'	=> 'add_registered_for_info_profile',
 			'core.ucp_pm_view_message'				=> [['add_registered_for_info_pm'], ['replace_joined_lang_entry']],
 			'core.viewtopic_modify_page_title'		=> 'replace_joined_lang_entry',
 			'core.memberlist_view_profile'			=> 'replace_joined_lang_entry',
-		);
+		];
 	}
 
 	/** @var \phpbb\language\language */

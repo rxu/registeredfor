@@ -18,7 +18,7 @@ class extension_test extends \phpbb_functional_test_case
 {
 	static protected function setup_extensions()
 	{
-		return array('rxu/registeredfor');
+		return ['rxu/registeredfor'];
 	}
 
 	public function test_post_miniprofile_info()
@@ -50,7 +50,7 @@ class extension_test extends \phpbb_functional_test_case
 	public function test_private_message_miniprofile_info()
 	{
 		$this->login();
-		$message_id = $this->create_private_message('Test private message #1', 'This is a test private message sent by the testing framework.', array(2));
+		$message_id = $this->create_private_message('Test private message #1', 'This is a test private message sent by the testing framework.', [2]);
 
 		$crawler = self::request('GET', "ucp.php?i=pm&mode=view&sid{$this->sid}&p={$message_id}");
 		$this->assertContains('Registered for', $crawler->filter('dd[class="profile-joined"]')->text());

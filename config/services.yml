@@ -3,6 +3,7 @@ services:
         class: rxu\registeredfor\event\main_listener
         arguments:
             - '@language'
+            - '@request'
             - '@template'
         tags:
             - { name: event.listener }

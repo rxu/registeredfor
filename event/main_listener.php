@@ -35,6 +35,9 @@ class main_listener implements EventSubscriberInterface
 	/** @var \phpbb\language\language */
 	protected $language;
 
+	/** @var \phpbb\request\request_interface */
+	protected $request;
+
 	/** @var \phpbb\template\template */
 	protected $template;
 
@@ -43,9 +46,10 @@ class main_listener implements EventSubscriberInterface
 	 *
 	 * @param \phpbb\language\language		$language	Language object
 	 */
-	public function __construct(\phpbb\language\language $language, \phpbb\template\template $template)
+	public function __construct(\phpbb\language\language $language, \phpbb\request\request_interface $request, \phpbb\template\template $template)
 	{
 		$this->language = $language;
+		$this->request = $request;
 		$this->template = $template;
 	}
 
@@ -90,7 +94,8 @@ class main_listener implements EventSubscriberInterface
 	 */
 	public function add_registered_for_info_profile($event)
 	{
-		if ((int) $event['data']['user_id'] != ANONYMOUS)
+		$mode = $this->request->variable('mode', '');
+		if ($mode == 'viewprofile' && (int) $event['data']['user_id'] != ANONYMOUS)
 		{
 			$template_data = $event['template_data'];
 

@@ -1,0 +1,8 @@
+services:
+    rxu.registeredfor.listener:
+        class: rxu\registeredfor\event\main_listener
+        arguments:
+            - '@language'
+            - '@template'
+        tags:
+            - { name: event.listener }

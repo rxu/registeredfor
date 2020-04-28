@@ -23,9 +23,11 @@ class main_listener implements EventSubscriberInterface
 	public static function getSubscribedEvents()
 	{
 		return array(
-			'core.viewtopic_cache_user_data'	=> 'add_registered_for_info',
-			'core.viewtopic_modify_post_row'	=> 'add_registered_for_info',
-			'core.viewtopic_modify_page_title'	=> 'replace_joined_lang_entry',
+			'core.viewtopic_cache_user_data'		=> 'add_registered_for_info_viewtopic',
+			'core.viewtopic_modify_post_row'		=> 'add_registered_for_info_viewtopic',
+			'core.viewtopic_modify_page_title'		=> 'replace_joined_lang_entry',
+			'core.memberlist_view_profile'			=> 'replace_joined_lang_entry',
+			'core.memberlist_prepare_profile_data'	=> 'add_registered_for_info_profile',
 		);
 	}
 
@@ -53,7 +55,7 @@ class main_listener implements EventSubscriberInterface
 	 * @param \phpbb\event\data	$event		Event object
 	 * @param string			$eventname	Name of the event
 	 */
-	public function add_registered_for_info($event, $eventname)
+	public function add_registered_for_info_viewtopic($event, $eventname)
 	{
 		if ((int) $event['poster_id'] != ANONYMOUS)
 		{
@@ -72,7 +74,7 @@ class main_listener implements EventSubscriberInterface
 					$post_row = $event['post_row'];
 					$user_poster_data = $event['post_row'];
 
-					$post_row['POSTER_JOINED'] = $this->parse_date_interval(time(),$event['user_poster_data']['user_regdate']);
+					$post_row['POSTER_JOINED'] = $this->parse_date_interval(time(), $event['user_poster_data']['user_regdate']);
 					$event['post_row'] = $post_row;
 				break;
 			}
@@ -80,14 +82,37 @@ class main_listener implements EventSubscriberInterface
 	}
 
 	/**
-	 * Replaces 'JOINED' language entry with 'REGISTEREDFOR' one
+	 * Adds 'Registered for' membership timespan information in member profile
+	 * and replaces 'Joined' information respectively
 	 *
 	 * @param \phpbb\event\data	$event		Event object
 	 */
-	public function replace_joined_lang_entry($event)
+	public function add_registered_for_info_profile($event)
 	{
-		if ((int) $event['topic_data']['topic_poster'] != ANONYMOUS)
+		if ((int) $event['data']['user_id'] != ANONYMOUS)
 		{
+			$template_data = $event['template_data'];
+
+			$template_data['JOINED'] = $this->parse_date_interval(time(), $event['data']['user_regdate']);
+			$event['template_data'] = $template_data;
+		}
+	}
+
+	/**
+	 * Replaces 'JOINED' language entry with 'REGISTEREDFOR' one
+	 *
+	 * @param \phpbb\event\data	$event		Event object
+	 * @param string			$eventname	Name of the event
+	 */
+	public function replace_joined_lang_entry($event, $eventname)
+	{
+		$user_id = $event['topic_data']['topic_poster'] ?? $event['member']['user_id'] ?? ANONYMOUS;
+		if ((int) $user_id != ANONYMOUS)
+		{
+			if ($eventname == 'core.memberlist_view_profile')
+			{
+				$this->language->add_lang('registeredfor', 'rxu\registeredfor');
+			}
 			$this->template->assign_var('L_JOINED', $this->language->lang('REGISTEREDFOR'));
 		}
 	}
@@ -97,6 +122,9 @@ class main_listener implements EventSubscriberInterface
 	 *
 	 * @param string	$new_time	A date/time string (Unix timestamp)
 	 * @param string	$old_time	A date/time string (Unix timestamp)
+	 *
+	 * @return string
+	 * @access protected
 	 */
 	protected function parse_date_interval($new_time, $old_time)
 	{

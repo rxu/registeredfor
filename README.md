@@ -1,5 +1,5 @@
 # 'Membership timespan' extension for the phpBB Forum Software package.
-# Replaces 'Joined' with 'Registered for' membership timespan in viewtopic miniprofile
+# Replaces 'Joined' with 'Registered for' membership timespan in viewtopic miniprofile and user profile
 
 ## Installation
 

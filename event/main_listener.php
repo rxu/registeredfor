@@ -72,26 +72,7 @@ class main_listener implements EventSubscriberInterface
 					$post_row = $event['post_row'];
 					$user_poster_data = $event['post_row'];
 
-					$current_time = time();
-					$seconds_delta = $current_time - (int) $event['user_poster_data']['user_regdate'];
-
-					$datetime_new = date_create('@' . (string) $current_time);
-					$datetime_old = date_create('@' . (string) $event['user_poster_data']['user_regdate']);
-					$interval = date_diff($datetime_new, $datetime_old);
-
-					$days_in_current_month = (int) date('t');
-					$days_in_current_year = 365 + (int) date('L');
-
-					$time = [];
-					($interval->y && $seconds_delta > 86400 * $days_in_current_year) ? 		$time[] = $this->language->lang('D_YEAR', $interval->y) : null;
-					($interval->m && $seconds_delta > 86400 * $days_in_current_month) ? 	$time[] = $this->language->lang('D_MON', $interval->m) : null;
-					($interval->d && $seconds_delta > 86400) ? 								$time[] = $this->language->lang('D_MDAY', $interval->d) : null;
-					($interval->h && $seconds_delta >= 3600  && $seconds_delta < 86400) ?	$time[] = $this->language->lang('D_HOURS', $interval->h) : null;
-					($interval->i && $seconds_delta >= 60 && $seconds_delta < 86400) ? 		$time[] = $this->language->lang('D_MINUTES', $interval->i) : null;
-					($interval->s && $seconds_delta < 60) ? 								$time[] = $this->language->lang('D_SECONDS', $interval->s) : null;
-
-					$post_row['POSTER_JOINED'] = implode(' ', $time);
-
+					$post_row['POSTER_JOINED'] = $this->parse_date_interval(time(),$event['user_poster_data']['user_regdate']);
 					$event['post_row'] = $post_row;
 				break;
 			}
@@ -109,5 +90,32 @@ class main_listener implements EventSubscriberInterface
 		{
 			$this->template->assign_var('L_JOINED', $this->language->lang('REGISTEREDFOR'));
 		}
+	}
+
+	/**
+	 * Parses date interval and outputs translated language entry
+	 *
+	 * @param string	$new_time	A date/time string (Unix timestamp)
+	 * @param string	$old_time	A date/time string (Unix timestamp)
+	 */
+	protected function parse_date_interval($new_time, $old_time)
+	{
+		$datetime_old = date_create('@' . (string) $old_time);
+		$datetime_new = date_create('@' . (string) $new_time);
+		$interval = date_diff($datetime_old, $datetime_new);
+
+		$seconds_delta = (int) $new_time - (int) $old_time;
+		$days_in_current_month = (int) date('t');
+		$days_in_current_year = 365 + (int) date('L');
+
+		$time = [];
+		($interval->y && $seconds_delta > 86400 * $days_in_current_year) ? 		$time[] = $this->language->lang('D_YEAR', $interval->y) : null;
+		($interval->m && $seconds_delta > 86400 * $days_in_current_month) ? 	$time[] = $this->language->lang('D_MON', $interval->m) : null;
+		($interval->d && $seconds_delta > 86400) ? 								$time[] = $this->language->lang('D_MDAY', $interval->d) : null;
+		($interval->h && $seconds_delta >= 3600  && $seconds_delta < 86400) ?	$time[] = $this->language->lang('D_HOURS', $interval->h) : null;
+		($interval->i && $seconds_delta >= 60 && $seconds_delta < 86400) ? 		$time[] = $this->language->lang('D_MINUTES', $interval->i) : null;
+		($interval->s && $seconds_delta < 60) ? 								$time[] = $this->language->lang('D_SECONDS', $interval->s) : null;
+
+		return implode(' ', $time);
 	}
 }

@@ -45,4 +45,14 @@ class extension_test extends \phpbb_functional_test_case
 		$this->assertContains('Registered for', $crawler->filter('dl[class="details"]')->eq(1)->text());
 		$this->assertNotContains('Joined', $crawler->filter('dl[class="details"]')->eq(1)->text());
 	}
+
+	public function test_private_message_miniprofile_info()
+	{
+		$this->login();
+		$message_id = $this->create_private_message('Test private message #1', 'This is a test private message sent by the testing framework.', array(2));
+
+		$crawler = self::request('GET', "ucp.php?i=pm&mode=view&sid{$this->sid}&p={$message_id}");
+		$this->assertContains('Registered for', $crawler->filter('dd[class="profile-joined"]')->text());
+		$this->assertNotContains('Joined', $crawler->filter('dd[class="profile-joined"]')->text());
+	}
 }

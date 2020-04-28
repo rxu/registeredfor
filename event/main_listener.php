@@ -25,9 +25,10 @@ class main_listener implements EventSubscriberInterface
 		return array(
 			'core.viewtopic_cache_user_data'		=> 'add_registered_for_info_viewtopic',
 			'core.viewtopic_modify_post_row'		=> 'add_registered_for_info_viewtopic',
+			'core.memberlist_prepare_profile_data'	=> 'add_registered_for_info_profile',
+			'core.ucp_pm_view_message'				=> [['add_registered_for_info_pm'], ['replace_joined_lang_entry']],
 			'core.viewtopic_modify_page_title'		=> 'replace_joined_lang_entry',
 			'core.memberlist_view_profile'			=> 'replace_joined_lang_entry',
-			'core.memberlist_prepare_profile_data'	=> 'add_registered_for_info_profile',
 		);
 	}
 
@@ -49,7 +50,7 @@ class main_listener implements EventSubscriberInterface
 	}
 
 	/**
-	 * Adds 'Registered for' membership timespan information in viewtopic
+	 * Adds 'Registered for' membership timespan information in viewtopic user miniprofile
 	 * and replaces 'Joined' information respectively
 	 *
 	 * @param \phpbb\event\data	$event		Event object
@@ -99,6 +100,25 @@ class main_listener implements EventSubscriberInterface
 	}
 
 	/**
+	 * Adds 'Registered for' membership timespan information in PM user miniprofile
+	 * and replaces 'Joined' information respectively
+	 *
+	 * @param \phpbb\event\data	$event		Event object
+	 */
+	public function add_registered_for_info_pm($event)
+	{
+		if ((int) $event['message_row']['author_id'] != ANONYMOUS)
+		{
+			$this->language->add_lang('registeredfor', 'rxu/registeredfor');
+
+			$msg_data = $event['msg_data'];
+
+			$msg_data['AUTHOR_JOINED'] = $this->parse_date_interval(time(), $event['user_info']['user_regdate']);
+			$event['msg_data'] = $msg_data;
+		}
+	}
+
+	/**
 	 * Replaces 'JOINED' language entry with 'REGISTEREDFOR' one
 	 *
 	 * @param \phpbb\event\data	$event		Event object
@@ -106,7 +126,7 @@ class main_listener implements EventSubscriberInterface
 	 */
 	public function replace_joined_lang_entry($event, $eventname)
 	{
-		$user_id = $event['topic_data']['topic_poster'] ?? $event['member']['user_id'] ?? ANONYMOUS;
+		$user_id = $event['topic_data']['topic_poster'] ?? $event['member']['user_id'] ?? $event['message_row']['author_id'] ?? ANONYMOUS;
 		if ((int) $user_id != ANONYMOUS)
 		{
 			if ($eventname == 'core.memberlist_view_profile')

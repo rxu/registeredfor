@@ -42,16 +42,23 @@ class main_listener implements EventSubscriberInterface
 	/** @var \phpbb\template\template */
 	protected $template;
 
+	/** @var \phpbb\user */
+	protected $user;
+
 	/**
 	 * Constructor
 	 *
-	 * @param \phpbb\language\language		$language	Language object
+	 * @param \phpbb\language\language			$language	Language object
+	 * @param \phpbb\request\request_interface	$request	Request object
+	 * @param \phpbb\template\template			$template	Template object
+	 * @param \phpbb\user						$user		User object
 	 */
-	public function __construct(\phpbb\language\language $language, \phpbb\request\request_interface $request, \phpbb\template\template $template)
+	public function __construct(\phpbb\language\language $language, \phpbb\request\request_interface $request, \phpbb\template\template $template, \phpbb\user $user)
 	{
 		$this->language = $language;
 		$this->request = $request;
 		$this->template = $template;
+		$this->user = $user;
 	}
 
 	/**
@@ -80,7 +87,8 @@ class main_listener implements EventSubscriberInterface
 					$post_row = $event['post_row'];
 					$user_poster_data = $event['post_row'];
 
-					$post_row['POSTER_JOINED'] = $this->parse_date_interval(time(), $event['user_poster_data']['user_regdate']);
+					$post_row['POSTER_JOINED'] = '<span title="' . $this->language->lang('JOINED') . ': ' . $this->user->format_date($event['user_poster_data']['user_regdate']) .'">' .
+													$this->parse_date_interval(time(), $event['user_poster_data']['user_regdate']) . '</span>';
 					$event['post_row'] = $post_row;
 				break;
 			}
@@ -100,7 +108,8 @@ class main_listener implements EventSubscriberInterface
 		{
 			$template_data = $event['template_data'];
 
-			$template_data['JOINED'] = $this->parse_date_interval(time(), $event['data']['user_regdate']);
+			$template_data['JOINED'] = '<span title="' . $this->language->lang('JOINED') . ': ' . $this->user->format_date($event['data']['user_regdate']) .'">' .
+											$this->parse_date_interval(time(), $event['data']['user_regdate']) . '</span>';
 			$event['template_data'] = $template_data;
 		}
 	}
@@ -119,7 +128,8 @@ class main_listener implements EventSubscriberInterface
 
 			$msg_data = $event['msg_data'];
 
-			$msg_data['AUTHOR_JOINED'] = $this->parse_date_interval(time(), $event['user_info']['user_regdate']);
+			$msg_data['AUTHOR_JOINED'] = '<span title="' . $this->language->lang('JOINED') . ': ' . $this->user->format_date($event['user_info']['user_regdate']) .'">' .
+											$this->parse_date_interval(time(), $event['user_info']['user_regdate']) . '</span>';
 			$event['msg_data'] = $msg_data;
 		}
 	}
@@ -163,10 +173,10 @@ class main_listener implements EventSubscriberInterface
 		$days_in_current_year = 365 + (int) date('L');
 
 		$time = [];
-		($interval->y && $seconds_delta > 86400 * $days_in_current_year) ? 		$time[] = $this->language->lang('D_YEAR', $interval->y) : null;
-		($interval->m && $seconds_delta > 86400 * $days_in_current_month) ? 	$time[] = $this->language->lang('D_MON', $interval->m) : null;
-		($interval->d && $seconds_delta > 86400) ? 								$time[] = $this->language->lang('D_MDAY', $interval->d) : null;
-		($interval->h && $seconds_delta >= 3600  && $seconds_delta < 86400) ?	$time[] = $this->language->lang('D_HOURS', $interval->h) : null;
+		($interval->y && $seconds_delta >= 86400 * $days_in_current_year) ? 	$time[] = $this->language->lang('D_YEAR', $interval->y) : null;
+		($interval->m && $seconds_delta >= 86400 * $days_in_current_month) ? 	$time[] = $this->language->lang('D_MON', $interval->m) : null;
+		($interval->d && $seconds_delta >= 86400 && $seconds_delta < 86400 * $days_in_current_month) ? $time[] = $this->language->lang('D_MDAY', $interval->d) : null;
+		($interval->h && $seconds_delta >= 3600 && $seconds_delta < 86400) ?	$time[] = $this->language->lang('D_HOURS', $interval->h) : null;
 		($interval->i && $seconds_delta >= 60 && $seconds_delta < 86400) ? 		$time[] = $this->language->lang('D_MINUTES', $interval->i) : null;
 		($interval->s && $seconds_delta < 60) ? 								$time[] = $this->language->lang('D_SECONDS', $interval->s) : null;
 

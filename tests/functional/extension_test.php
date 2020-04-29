@@ -34,17 +34,19 @@ class extension_test extends \phpbb_functional_test_case
 		$this->db->sql_freeresult($result);
 
 		$crawler = self::request('GET', "viewtopic.php?p={$post['post_id']}#p{$post['post_id']}");
-		$this->assertContains('Registered for', $crawler->filter('dd[class="profile-joined"]')->text());
-		$this->assertNotContains('Joined', $crawler->filter('dd[class="profile-joined"]')->text());
+		$this->assertContains('Registered for', $crawler->filter('dd[class="profile-joined"] > strong')->text());
+		$this->assertContains('Joined', $crawler->filter('dd[class="profile-joined"] > span')->attr('title'));
+		$this->assertNotContains('Joined', $crawler->filter('dd[class="profile-joined"] > strong')->text());
 	}
 
-	public function test_post_memberlist_profile_info()
+	public function test_memberlist_profile_info()
 	{
 		$this->login();
 
 		$crawler = self::request('GET', 'memberlist.php?mode=viewprofile&u=2&sid=' . $this->sid);
-		$this->assertContains('Registered for', $crawler->filter('dl[class="details"]')->eq(1)->text());
-		$this->assertNotContains('Joined', $crawler->filter('dl[class="details"]')->eq(1)->text());
+		$this->assertContains('Registered for', $crawler->filter('div[class="column2"] > dl[class="details"] > dt')->text());
+		$this->assertContains('Joined', $crawler->filter('div[class="column2"] > dl[class="details"] > dd > span')->attr('title'));
+		$this->assertNotContains('Joined', $crawler->filter('div[class="column2"] > dl[class="details"] > dt')->text());
 	}
 
 	public function test_private_message_miniprofile_info()
@@ -53,7 +55,8 @@ class extension_test extends \phpbb_functional_test_case
 		$message_id = $this->create_private_message('Test private message #1', 'This is a test private message sent by the testing framework.', [2]);
 
 		$crawler = self::request('GET', "ucp.php?i=pm&mode=view&sid{$this->sid}&p={$message_id}");
-		$this->assertContains('Registered for', $crawler->filter('dd[class="profile-joined"]')->text());
-		$this->assertNotContains('Joined', $crawler->filter('dd[class="profile-joined"]')->text());
+		$this->assertContains('Registered for', $crawler->filter('dd[class="profile-joined"] > strong')->text());
+		$this->assertContains('Joined', $crawler->filter('dd[class="profile-joined"] > span')->attr('title'));
+		$this->assertNotContains('Joined', $crawler->filter('dd[class="profile-joined"] > strong')->text());
 	}
 }

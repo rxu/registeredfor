@@ -169,16 +169,14 @@ class main_listener implements EventSubscriberInterface
 		$interval = date_diff($datetime_old, $datetime_new);
 
 		$seconds_delta = (int) $new_time - (int) $old_time;
-		$days_in_current_month = (int) date('t');
-		$days_in_current_year = 365 + (int) date('L');
 
 		$time = [];
-		($interval->y && $seconds_delta >= 86400 * $days_in_current_year) ? 	$time[] = $this->language->lang('D_YEAR', $interval->y) : null;
-		($interval->m && $seconds_delta >= 86400 * $days_in_current_month) ? 	$time[] = $this->language->lang('D_MON', $interval->m) : null;
-		($interval->d && $seconds_delta >= 86400 && $seconds_delta < 86400 * $days_in_current_month) ? $time[] = $this->language->lang('D_MDAY', $interval->d) : null;
-		($interval->h && $seconds_delta >= 3600 && $seconds_delta < 86400) ?	$time[] = $this->language->lang('D_HOURS', $interval->h) : null;
-		($interval->i && $seconds_delta >= 60 && $seconds_delta < 86400) ? 		$time[] = $this->language->lang('D_MINUTES', $interval->i) : null;
-		($interval->s && $seconds_delta < 60) ? 								$time[] = $this->language->lang('D_SECONDS', $interval->s) : null;
+		($interval->y) ? $time[] = $this->language->lang('D_YEAR', $interval->y) : null;
+		($interval->m) ? $time[] = $this->language->lang('D_MON', $interval->m) : null;
+		($interval->d && !$interval->m  && !$interval->y) ? $time[] = $this->language->lang('D_MDAY', $interval->d) : null;
+		($interval->h && $seconds_delta >= 3600 && $seconds_delta < 86400) ? $time[] = $this->language->lang('D_HOURS', $interval->h) : null;
+		($interval->i && $seconds_delta >= 60 && $seconds_delta < 86400) ? $time[] = $this->language->lang('D_MINUTES', $interval->i) : null;
+		($interval->s && $seconds_delta < 60) ? $time[] = $this->language->lang('D_SECONDS', $interval->s) : null;
 
 		return implode(' ', $time);
 	}
